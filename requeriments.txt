@@ -1,0 +1,14 @@
+asgiref==3.8.1
+certifi==2025.4.26
+charset-normalizer==3.4.2
+Django==5.2.1
+django-auditlog==3.1.2
+djangorestframework==3.16.0
+idna==3.10
+Pygments==2.19.1
+python-dateutil==2.9.0.post0
+requests==2.32.3
+six==1.17.0
+sqlparse==0.5.3
+tzdata==2025.2
+urllib3==2.4.0
