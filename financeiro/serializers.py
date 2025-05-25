@@ -4,14 +4,31 @@ from financeiro.models import (
     LANGUAGE_CHOICES, 
     STYLE_CHOICES,
     Fornecedor,
-    Cidade
+    Cidade,
+    Estado
 )
 import requests
+
+class EstadoSerializer(serializers.ModelSerializer):
+    
+    cidades = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Estado
+        fields = ['id', 'nome', 'uf', 'cidades']
+
+    def get_cidades(self, obj):
+        cidades = Cidade.objects.filter(estado=obj)
+        return CidadeSerializer(cidades, many=True).data
+
+
 
 class CidadeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cidade
         fields = ['id', 'nome', 'estado']
+
+
 
 class FornecedorSerializer(serializers.ModelSerializer):
     
