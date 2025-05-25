@@ -14,13 +14,14 @@ class CidadeSerializer(serializers.ModelSerializer):
         fields = ['id', 'nome', 'estado']
 
 class FornecedorSerializer(serializers.ModelSerializer):
-    cidade = CidadeSerializer(read_only=True)
+    
+    cidade = serializers.PrimaryKeyRelatedField(queryset=Cidade.objects.all())
 
     class Meta:
         model = Fornecedor
         fields = '__all__'
 
-    def validar_cnpj(self, valor):
+    def validate_cnpj(self, valor):
    
         cnpj = ''.join(filter(str.isdigit, valor))
 
@@ -45,7 +46,7 @@ class FornecedorSerializer(serializers.ModelSerializer):
             "telefone" : dados.get("telefone"),
             "email" : dados.get("email"),
             "logradouro" : dados.get("logradouro"),
-            "atividade_principal" : dados.get("atividade_principal")
+            "atividade_principal": dados.get("atividade_principal", [{}])[0].get("text", "")
         }
         return cnpj
     

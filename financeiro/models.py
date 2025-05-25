@@ -44,6 +44,15 @@ class Fornecedor(Base):
     cnpj = models.CharField(blank=True, null=True)
     cidade = models.ForeignKey(Cidade, on_delete=models.PROTECT, blank=False, null=False)
 
+    logradouro = models.CharField(max_length=255, blank=True, null=True)
+    numero = models.CharField(max_length=20, blank=True, null=True)
+    bairro = models.CharField(max_length=100, blank=True, null=True)
+    cep = models.CharField(max_length=20, blank=True, null=True)
+    complemento = models.CharField(max_length=100, blank=True, null=True)
+    telefone = models.CharField(max_length=30, blank=True, null=True)
+    email = models.CharField(blank=True, null=True)
+    atividade_principal = models.TextField(blank=True, null=True)
+
     historico = AuditlogHistoryField()  # Isso cria os logs
 
 
