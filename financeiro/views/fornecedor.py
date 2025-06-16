@@ -8,7 +8,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
-from financeiro.tasks import add
 
     
 
@@ -21,7 +20,6 @@ class FornecedorViewSet(APIView):
             raise Http404
     
     def get(self, request, pk=None):
-        add.delay(10, 10)
         
         if pk:
             fornecedor = Fornecedor.objects.get(id=pk)

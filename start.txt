@@ -1,0 +1,4 @@
+ativar env -> source env/Scripts/activate
+rodar o servidor -> python manage.py runserver
+rodar servidor redis -> redis-server
+rodar o celery -> celery -A projeto worker --loglevel=info 

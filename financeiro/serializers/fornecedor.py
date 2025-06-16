@@ -6,7 +6,6 @@ from financeiro.models.fornecedor import (
 import requests
     
 class CidadeSerializer(serializers.ModelSerializer):
-    #estado = EstadoSerializer()
     class Meta:
         model = Cidade
         fields = ['nome', 'estado']
