@@ -1,0 +1,56 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados PostgreSQL
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    hostname: db
+    environment:
+      - POSTGRES_DB=financeiro_db
+      - POSTGRES_USER=financeiro_user
+      - POSTGRES_PASSWORD=financeiro_pass
+
+  # Serviço do Redis
+  redis:
+    image: redis:6-alpine
+    hostname: redis
+
+  # Serviço da Aplicação Web (Django)
+  web:
+    build: .
+    hostname: web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app/
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=minha-secret-key-super-segura-para-desenvolvimento
+      - DEBUG=True
+      - DATABASE_URL=postgres://financeiro_user:financeiro_pass@db:5432/financeiro_db
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  # Serviço do Worker (Celery)
+  worker:
+    build: .
+    hostname: worker
+    command: celery -A projeto worker -l info
+    volumes:
+      - .:/app/
+    environment:
+      - DATABASE_URL=postgres://financeiro_user:financeiro_pass@db:5432/financeiro_db
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data:

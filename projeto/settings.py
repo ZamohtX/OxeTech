@@ -1,3 +1,5 @@
+# projeto/settings.py
+
 """
 Django settings for projeto project.
 
@@ -23,9 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-v7z(s16w%_$+cjq@*+58e0i8%mij3wqnac!1@bh6i(j#047u89'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Para desenvolvimento local, é seguro manter como True.
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Hosts permitidos para desenvolvimento local.
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -78,7 +82,9 @@ WSGI_APPLICATION = 'projeto.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+#
+# Configurado para usar o SQLite, um arquivo de banco de dados simples.
+# O arquivo db.sqlite3 será criado na raiz do seu projeto.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -127,3 +133,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# --- Celery Configuration ---
+# Aponta para o servidor Redis que está rodando na sua máquina (localhost).
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'

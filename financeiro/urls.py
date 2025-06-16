@@ -1,11 +1,8 @@
 from django.urls import path
-from financeiro import views
+from financeiro.views.fornecedor import FornecedorViewSet
 
 urlpatterns = [
-    path('fornecedores/', views.fornecedor_list),
-    path('fornecedor/<int:pk>/', views.fornecedor_detail),
-    path('cidades/', views.cidade_list),
-    path('cidades/<int:pk>/', views.cidade_detail),
-    path('estados/', views.estado_list),
-    path('estados/<int:pk>/', views.estado_detail)
+    # Fornecedores
+    path('fornecedores/', FornecedorViewSet.as_view(), name='fornecedor-list'),
+    path('fornecedores/<int:pk>/', FornecedorViewSet.as_view(), name='fornecedor-detail'),
 ]
