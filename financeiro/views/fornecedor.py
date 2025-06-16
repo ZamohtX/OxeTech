@@ -1,56 +1,56 @@
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
-from financeiro.models.fornecedor import Fornecedor
-from financeiro.serializers.fornecedor import FornecedorSerializer
-from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
+from financeiro.serializers.fornecedor import FornecedorSerializer
+from financeiro.repositories.fornecedor import FornecedorRepository
 
-    
 
-class FornecedorViewSet(APIView):
+class FornecedorAPIView(APIView):
     
-    def get_object(self, pk):
-        try:
-            return Fornecedor.objects.get(pk=pk)
-        except Fornecedor.DoesNotExist:
-            raise Http404
-    
+    repository = FornecedorRepository()
+
     def get(self, request, pk=None):
-        
         if pk:
-            fornecedor = Fornecedor.objects.get(id=pk)
-            
+            fornecedor = self.repository.get_by_id(pk)
+            if not fornecedor:
+                raise Http404("Fornecedor não encontrado.")
             serializer = FornecedorSerializer(fornecedor)
-            return JsonResponse(serializer.data, safe=False)
-
-        fornecedores = Fornecedor.objects.all()
-        serializer = FornecedorSerializer(fornecedores, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    
-
+            return Response(serializer.data)
+        else:
+            fornecedores  = self.repository.get_all()
+            serializer = FornecedorSerializer(fornecedores, many= True)
+            return Response(serializer.data)
+        
     def post(self, request):
         serializer = FornecedorSerializer(data=request.data)
+        if serializer.is_valid():
+            novo_fornecedor = self.repository.create(serializer.validated_data)
+            response_serializer = FornecedorSerializer(novo_fornecedor)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, pk=None):
+        instance = self.repository.get_by_id(pk)
+        if not instance:
+            raise Http404("Fornecedor não encontrado.")
         
-    
-    
-    def put(self, request, pk):
-        snippet = self.get_object(pk)
-        serializer = FornecedorSerializer(snippet, data=request.data)
+        serializer = FornecedorSerializer(instance, data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+            fornecedor_atualizado = self.repository.update(pk, serializer.validated_data)
+            return Response(FornecedorSerializer(fornecedor_atualizado).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def delete(self, request, pk):
-        fornecedor = self.get_object(pk)
-        fornecedor.delete()
+
+
+    def delete(self, request, pk=None):
+        sucesso = self.repository.delete(pk)
+        if not sucesso:
+            raise Http404("Fornecedor não encontrado.")
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
