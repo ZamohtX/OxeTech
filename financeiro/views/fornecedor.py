@@ -4,7 +4,6 @@ from rest_framework import status
 from django.http import Http404
 from financeiro.serializers.fornecedor import FornecedorSerializer
 from financeiro.repositories.fornecedor import FornecedorRepository
-from financeiro.tasks import consultar_e_atualizar_cnpj
 
 
 class FornecedorAPIView(APIView):
@@ -27,8 +26,6 @@ class FornecedorAPIView(APIView):
         serializer = FornecedorSerializer(data=request.data)
         if serializer.is_valid():
             novo_fornecedor = self.repository.create(serializer.validated_data)
-            if novo_fornecedor.cnpj:
-                consultar_e_atualizar_cnpj.delay(novo_fornecedor.pk)
             response_serializer = FornecedorSerializer(novo_fornecedor)
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

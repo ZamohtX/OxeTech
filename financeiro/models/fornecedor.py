@@ -27,7 +27,6 @@ class Fornecedor(Base):
     cnpj = models.CharField(blank=True, null=True)
     cidade = models.ForeignKey(Cidade, on_delete=models.PROTECT, blank=True, null=True)
     logradouro = models.CharField(blank=True, null=True)
-    dados_api_cnpj = models.JSONField(null=True, blank=True)
 
     
 class FormaPagamento(Base):
