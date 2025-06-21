@@ -25,7 +25,7 @@ class FornecedorAPIView(APIView):
     def post(self, request):
         serializer = FornecedorSerializer(data=request.data)
         if serializer.is_valid():
-            novo_fornecedor = self.repository.create(serializer.validated_data)
+            novo_fornecedor = self.repository.create(**serializer.validated_data)
             response_serializer = FornecedorSerializer(novo_fornecedor)
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -38,17 +38,22 @@ class FornecedorAPIView(APIView):
         
         serializer = FornecedorSerializer(instance, data=request.data)
         if serializer.is_valid():
-            fornecedor_atualizado = self.repository.update(pk, serializer.validated_data)
+            fornecedor_atualizado = self.repository.update(pk, **serializer.validated_data)
             return Response(FornecedorSerializer(fornecedor_atualizado).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     def delete(self, request, pk=None):
-        sucesso = self.repository.delete(pk)
-        if not sucesso:
-            raise Http404("Fornecedor não encontrado.")
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+        if pk:
+            sucesso = self.repository.delete(pk)
+            if not sucesso:
+                raise Http404("Fornecedor não encontrado.")
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            sucesso = self.repository.delete_all()
+            if not sucesso:
+                raise Http404("Não foi possivel deletar todos os Fornecedores")
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 

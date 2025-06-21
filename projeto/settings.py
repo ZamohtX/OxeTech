@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
+
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,11 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-v7z(s16w%_$+cjq@*+58e0i8%mij3wqnac!1@bh6i(j#047u89'
+SECRET_KEY = config('SECRET_KEY') 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Para desenvolvimento local, é seguro manter como True.
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # Hosts permitidos para desenvolvimento local.
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -134,8 +137,17 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@financeiro.com'
 
-# --- Celery Configuration ---
-# Aponta para o servidor Redis que está rodando na sua máquina (localhost).
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Sao_Paulo'
+
+
+SENDGRID_API_KEY = config('SENDGRID_API_KEY')
+DEFAULT_FROM_EMAIL = 'thomazxaavier@gmail.com'
