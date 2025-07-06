@@ -4,6 +4,7 @@ import os
 from django.core.management.base import BaseCommand, CommandError
 from financeiro.models.fornecedor import Fornecedor, Cidade
 from financeiro.repositories.fornecedor import FornecedorRepository
+from financeiro.tasks import enviar_email
 
 class Command(BaseCommand):
 
@@ -13,8 +14,7 @@ class Command(BaseCommand):
         book = xlrd.open_workbook(path)
         
         sh = book.sheet_by_index(0)
-
-
+        
         for rx in range(sh.nrows):
             if rx > 0:
                 nome = sh.row(rx)[0].value
@@ -28,7 +28,12 @@ class Command(BaseCommand):
                             "logradouro": "Desconhecido"
                         }
                     )
-                print(objeto, _)
+                
+        email_enviado = enviar_email.delay(
+            destinatario='juniorgamer009@gmail.com',
+            assunto='Relatorio de Cadastro',
+            mensagem='Fornecedores Cadastrados'
+        )
 
 
 
